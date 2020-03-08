@@ -157,5 +157,70 @@ To generate this file create [**Firebase**](https://console.firebase.google.com/
 Then add application to project on platform Android.
 After that firebase generates google-services.json for project.
 
-# Custommodel
+Last thing is adding our future model to webpack(it is necessary to give our app path to custommodel)
 
+Open webpack.config.js and on lines 272-276 add in **CopyWebpackPlugin** line ```{ from: { glob: "**/custommodel/**" }```
+
+Should looks as following
+```
+new CopyWebpackPlugin([
+                { from: { glob: "fonts/**" } },
+                { from: { glob: "**/*.jpg" } },
+                { from: { glob: "**/*.png" } },
+                { from: { glob: "**/custommodel/**" } },
+            ]
+```
+# Custommodel
+Custommodel it is a model trained with tensorflow and to tensorflow lite for mobile application.
+In custommodel we have 3 files.
+
+dict.txt - labels
+manifest.json - definitions
+model.tflite - trained model
+
+We have 2 opportunities to train model:
+1. Using firebase MlKit feature [**AutoMl**](https://console.firebase.google.com/project/imgrec-mob-storage/ml/automl)
+It is easy way to create own model(up to 1000 pictures in 1 model). However recognition quality could be low if we use firebase free version. 
+2. Create own tensorflow trainer
+[**More about Mlkit**](https://firebase.google.com/docs/ml-kit)
+
+# Recognition page
+
+For MlKit components we need some definitions in **app.module.ts**
+
+```
+import { registerElement } from "nativescript-angular/element-registry";
+registerElement("MLKitObjectDetection", () => require("nativescript-plugin-firebase/mlkit/objectdetection").MLKitObjectDetection);
+registerElement("MLKitCustomModel", () => require("nativescript-plugin-firebase/mlkit/custommodel").MLKitCustomModel);
+```
+
+Now we can add recognition page code
+In **recognition.component.html** we need following tag which creates camera with recognition
+```
+<MLKitCustomModel
+width="100%"
+height="100%"
+localModelFile="~/app/custommodel/devices/model.tflite"
+labelsFile="~/app/custommodel/devices/dict.txt"
+modelInputShape="1, 299, 299, 3"
+modelInputType="QUANT"
+processEveryNthFrame="30"
+maxResults="5"
+(scanResult)="onCustomModelResult($event)">
+</MLKitCustomModel>
+```
+
+In **recognition.component.ts** we add onCustomModelResult method for some actions, when recognized image found
+```
+onCustomModelResult(scanResult: any): void {
+    const value: MLKitCustomModelResult = scanResult.value;
+    console.log(value);
+  }
+```
+
+## Now try to run application
+
+If all was done right, then in console you will see log of 3 items which are recognized.
+For preventing errors check project files.
+
+Create your own model!
