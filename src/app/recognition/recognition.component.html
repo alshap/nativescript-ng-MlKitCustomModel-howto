@@ -1,0 +1,11 @@
+<MLKitCustomModel
+width="100%"
+height="100%"
+localModelFile="~/app/custommodel/devices/model.tflite"
+labelsFile="~/app/custommodel/devices/dict.txt"
+modelInputShape="1, 299, 299, 3"
+modelInputType="QUANT"
+processEveryNthFrame="30"
+maxResults="5"
+(scanResult)="onCustomModelResult($event)">
+</MLKitCustomModel>
