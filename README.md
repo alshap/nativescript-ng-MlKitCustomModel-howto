@@ -33,6 +33,7 @@ tns device
 ```
 2. App run, build and debug in real time
 ```
+tns build android
 tns run android
 ```
 3. If after plugin add vulnerabilities are found it is better to make audit
